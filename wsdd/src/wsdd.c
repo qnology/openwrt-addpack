@@ -516,8 +516,10 @@ int udp_receive(int conn, struct sockaddr *from, int *from_len, struct in_addr *
 	/* Get local IP */
 	*recv_ip = 0;
 	for (cmsg = CMSG_FIRSTHDR(&msg); cmsg != 0; cmsg = CMSG_NXTHDR(&msg, cmsg))
-		if (cmsg->cmsg_level == IPPROTO_IP && cmsg->cmsg_type == IP_PKTINFO)
-			*to = ((struct in_pktinfo*)CMSG_DATA(cmsg))->ipi_spec_dst;
+		if (cmsg->cmsg_level == IPPROTO_IP && cmsg->cmsg_type == IP_PKTINFO) {
+			struct in_pktinfo *pktinfo = (struct in_pktinfo*)CMSG_DATA(cmsg);
+			*to = pktinfo->ipi_spec_dst;
+		}
 
 	*from_len = msg.msg_namelen;
 	return in_len;
