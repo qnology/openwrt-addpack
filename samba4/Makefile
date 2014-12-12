@@ -202,6 +202,7 @@ define Package/samba4-server/install
 endef
 
 define Package/samba4-server/conffiles
+/etc/config/samba4
 /etc/samba/smb.conf.template
 endef
 
