@@ -21,6 +21,7 @@ PKG_LICENSE:=GPLv3
 PKG_LICENSE_FILES:=COPYING
 
 PKG_BUILD_PARALLEL:=1
+PKG_BUILD_DEPENDS:=util-linux krb5-mit-ldap luci
 
 include $(INCLUDE_DIR)/package.mk
 include $(INCLUDE_DIR)/nls.mk
@@ -29,6 +30,10 @@ MAKE_PATH:=source3
 CONFIGURE_PATH:=source3
 
 PKG_BUILD_BIN:=$(PKG_BUILD_DIR)/$(MAKE_PATH)/bin
+define Build/Prepare
+	$(Build/Prepare/Default)
+	cd $(PKG_BUILD_DIR)/$(CONFIGURE_PATH) && ./autogen.sh
+endef
 
 define Package/samba4-server
   SECTION:=net
@@ -36,7 +41,7 @@ define Package/samba4-server
   TITLE:=Samba $(PKG_VERSION) SMB/CIFS server with ADS support
   URL:=http://www.samba.org/
   VARIANT:=samba4-server
-  DEPENDS:=+USE_EGLIBC:librt +libpopt +libuuid +libopenldap-sasl +krb5-mit-libs +krb5-mit-client $(ICONV_DEPENDS) +libacl +libreadline +libaio +libtirpc +wsdd
+  DEPENDS:=+USE_EGLIBC:librt +libpopt +libuuid +libopenldap-sasl +krb5-mit-libs $(INTL_DEPENDS) +libacl +libreadline +libaio +libtirpc +wsdd
 endef
 
 define Package/samba4-client
@@ -82,7 +87,7 @@ TARGET_CFLAGS += \
 	-DLSA_SUPPORT
 
 TARGET_LDFLAGS += \
-	-Wl,--gc-sections -laio -lkrb5 -l:libcom_err.so.3 -ldl -lgssapi_krb5 -ltirpc \
+	-Wl,--gc-sections -laio -lkrb5 -l:libcom_err.so.3 -ldl -lgssapi_krb5 -ltirpc $(INTL_LIBS) \
 	-Wl,-rpath-link=$(STAGING_DIR)/usr/lib -lkrb5 \
 
 CONFIGURE_VARS += \
